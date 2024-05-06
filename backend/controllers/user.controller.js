@@ -68,9 +68,10 @@ export const followUnfollowUser = async(req, res) => {
 export const getSuggestedUsers = async(req, res) => {
     try {
         const userId = req.user._id;
+
         const usersFollowedByMe = await User.findById(userId).select("following");
 
-        await User.aggregate([
+        const users = await User.aggregate([
             {
                 $match: {
                     _id: {$ne: userId}
@@ -79,7 +80,7 @@ export const getSuggestedUsers = async(req, res) => {
             {$sample: {size: 10}},
         ]);
 
-        // 1,2,3,5,5,6
+        // 1,2,3,4,5,6
         const filteredUsers = users.filter((user) => !usersFollowedByMe.following.includes(user._id));
         const suggestedUsers = filteredUsers.slice(0,5);
 
