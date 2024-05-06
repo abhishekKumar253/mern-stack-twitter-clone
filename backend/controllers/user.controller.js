@@ -19,6 +19,7 @@ export const getUserProfile = async(req, res) => {
     }
 };
 
+
 export const followUnfollowUser = async(req, res) => {
     try {
         const {id} = req.params;
@@ -91,15 +92,15 @@ export const getSuggestedUsers = async(req, res) => {
     }
 }
 
-export const updateUser = async(req, res) => {
-    const {fullName, email, username, currentPassword, newPassword, bio, link} = req.body;
-    let {profileImg, coverImg} = req.body;
+// export const updateUser = async(req, res) => {
+//     const {fullName, email, username, currentPassword, newPassword, bio, link} = req.body;
+//     let {profileImg, coverImg} = req.body;
 
-    const userId = req.user._id;
-    try {
+//     const userId = req.user._id;
+//     try {
         
-    } catch (error) {
-        console.log("Error in updateUser", error.message);
-        res.status(500).json({ message: "Internal Server Error" });
-    }
-}
+//     } catch (error) {
+//         console.log("Error in updateUser", error.message);
+//         res.status(500).json({ message: "Internal Server Error" });
+//     }
+// }
