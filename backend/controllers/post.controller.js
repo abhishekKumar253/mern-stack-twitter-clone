@@ -1,3 +1,4 @@
+import Notification from "../models/notification.model.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
@@ -30,8 +31,7 @@ export const createPost = async(req, res) => {
         await newPost.save();
         res.status(201).json(newPost)
     } catch (error) {
-        res.status(500).json({error: "Internal server error"})
-        console.log("Error in createPost controller", error.message);
+        res.status(500).json({error: "Error in createPost controller"})
     }
 }
 
@@ -54,8 +54,7 @@ export const deletePost = async(req, res) => {
 
         res.status(200).json({message: "Post deleted successfully"})
     } catch (error) {
-        res.status(500).json({error: "Internal server error"})
-        console.log("Error in deletePost controller: ", error);
+        res.status(500).json({error: "Error in deletePost controller"})
     }
 }
 
@@ -82,7 +81,47 @@ export const commentPost = async(req, res) => {
 
         res.status(201).json({message: "Comment added successfully"});
     } catch (error) {
-        res.status(500).json({error: "Internal server error"})
-        console.log("Error in commentPost controller: ", error);
+        res.status(500).json({error: "Error in commentPost controller"})
+    }
+}
+
+export const likeUnlikePost = async(req, res) => {
+    try {
+        const userId = req.user._id;
+        const {id: postId} = req.params;
+
+        const post = await Post.findById(postId);
+
+        if(!post){
+            return res.status(404).json({error: "Post not found"});
+        }
+
+        const userLikedPost = post.likes.includes(userId);
+
+        if(userLikedPost){
+            // unlike the post
+            await Post.updateOne({_id: postId}, {$pull: {likes: userId}});
+            await User.updateOne({_id: userId}, {$pull: {likedPosts: postId}});
+
+            const updatedLikes = post.likes.filter((id) => id.toString() !== userId.toString());
+            res.status(200).json(updatedLikes);
+        }else{
+            // like the post
+            post.likes.push(userId);
+            await Post.updateOne({_id: userId}, {$push: {likedPosts: postId}});
+            await post.save();
+
+            const notification = new Notification({
+                from: userId,
+                to: post.user,
+                type: "like",
+            });
+            await notification.save();
+
+            const updatedLikes = post.likes;
+            res.status(200).json(updatedLikes);
+        }
+    } catch (error) {
+        res.status(500).json({error: "Error in likeUnlikePost controller"})
     }
 }
