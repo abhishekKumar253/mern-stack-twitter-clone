@@ -58,3 +58,4 @@ export const deletePost = async(req, res) => {
         console.log("Error in deletePost controller: ", error);
     }
 }
+
