@@ -8,6 +8,7 @@ import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModel";
+import { useQuery } from "@tanstack/react-query";
 
 const ProfilePage = () => {
   const [coverImg, setCoverImg] = useState(null);
@@ -19,6 +20,8 @@ const ProfilePage = () => {
 
   const isLoading = false;
   const isMyProfile = true;
+
+  const { data: authUser, error } = useQuery({ queryKey: ["authUser"] });
 
   const user = {
     _id: "1",
