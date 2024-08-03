@@ -100,7 +100,13 @@ const CreatePost = () => {
             />
             <BsEmojiSmileFill className="fill-primary w-5 h-5 cursor-pointer" />
           </div>
-          <input type="file" hidden ref={imgRef} onChange={handleImgChange} />
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            ref={imgRef}
+            onChange={handleImgChange}
+          />
           <button className="btn btn-primary rounded-full btn-sm text-white px-4">
             {isPending ? "Posting..." : "Post"}
           </button>
