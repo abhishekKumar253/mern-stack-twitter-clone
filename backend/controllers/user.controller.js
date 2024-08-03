@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
 import Notification from "../models/notification.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { v2 as cloudinary } from "cloudinary";
 
 export const getUserProfile = async (req, res) => {
   const { username } = req.params;
@@ -108,11 +108,9 @@ export const updateUser = async (req, res) => {
       (!newPassword && currentPassword) ||
       (!currentPassword && newPassword)
     ) {
-      return res
-        .status(400)
-        .json({
-          error: "please provide both current Password and new Password",
-        });
+      return res.status(400).json({
+        error: "please provide both current Password and new Password",
+      });
     }
 
     if (currentPassword && newPassword) {
@@ -136,17 +134,17 @@ export const updateUser = async (req, res) => {
           user.profileImg.split("/").pop().split(".")[0]
         );
       }
-      const uploadedResponse = await uploadOnCloudinary(profileImg);
+      const uploadedResponse = await cloudinary.uploader.upload(profileImg);
       profileImg = uploadedResponse.secure_url;
     }
 
     if (coverImg) {
       if (user.coverImg) {
-        await uploadOnCloudinary.destroy(
+        await cloudinary.uploader.destroy(
           user.coverImg.split("/").pop().split(".")[0]
         );
       }
-      const uploadedResponse = await uploadOnCloudinary(coverImg);
+      const uploadedResponse = await cloudinary.uploader.upload(coverImg);
       coverImg = uploadedResponse.secure_url;
     }
 
