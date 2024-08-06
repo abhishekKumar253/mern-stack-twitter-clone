@@ -7,9 +7,10 @@ import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModel";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import useFollow from "../../hooks/useFollow";
 import { formatMemberSinceDate } from "../../utils/date";
+import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
 
 const ProfilePage = () => {
   const [coverImg, setCoverImg] = useState(null);
@@ -44,6 +45,8 @@ const ProfilePage = () => {
       }
     },
   });
+
+  const { isUpdatingProfile, updateProfile } = useUpdateUserProfile();
 
   const isMyProfile = authUser._id === user?._id;
   const memberSinceDate = formatMemberSinceDate(user?.createdAt);
@@ -141,17 +144,23 @@ const ProfilePage = () => {
                 {!isMyProfile && (
                   <button
                     className="btn btn-outline rounded-full btn-sm"
-                    onClick={() => alert("Followed successfully")}
+                    onClick={() => follow(user._id)}
                   >
-                    Follow
+                    {isPending && "Loading..."}
+                    {!isPending && amIFollowing && "Unfollow"}
+                    {!isPending && !amIFollowing && "Follow"}
                   </button>
                 )}
                 {(coverImg || profileImg) && (
                   <button
                     className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
-                    onClick={() => alert("Profile updated successfully")}
+                    onClick={async () => {
+                      await updateProfile({ coverImg, profileImg });
+                      setProfileImg(null);
+                      setCoverImg(null);
+                    }}
                   >
-                    Update
+                    {isUpdatingProfile ? "Updating..." : "Update"}
                   </button>
                 )}
               </div>
