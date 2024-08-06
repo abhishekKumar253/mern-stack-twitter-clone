@@ -35,19 +35,17 @@ const SignUpPage = () => {
         if (!res.ok) throw new Error(data.error || "Failed to create account");
         return data;
       } catch (error) {
-        console.log(error);
-        throw error;
+        throw new Error(error);
       }
     },
     onSuccess: () => {
       toast.success("Account created successfully");
-
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
   });
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // page won't reload
     mutate(formData);
   };
 
@@ -58,7 +56,7 @@ const SignUpPage = () => {
   return (
     <div className="max-w-screen-xl mx-auto flex h-screen px-10">
       <div className="flex-1 hidden lg:flex items-center  justify-center">
-        <XSvg className=" lg:w-2/3 fill-white" />
+        <XSvg className="lg:w-2/3 fill-white" />
       </div>
       <div className="flex-1 flex flex-col justify-center items-center">
         <form

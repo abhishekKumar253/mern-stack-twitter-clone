@@ -10,6 +10,6 @@ export const generateTokenAndSetCookie = (userId, res) => {
     maxAge: 15 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     sameSite: "strict",
-    secure: config.node_env !== "development",
+    secure: config.node_env !== "production",
   });
 };
