@@ -87,7 +87,7 @@ export const getSuggestedUsers = async (req, res) => {
 
     res.status(200).json(suggestedUsers);
   } catch (error) {
-    res.status(500).json({ message: "Error in getSuggestedUsers" });
+    res.status(500).json({ message: "Error in getSuggestedUsers", error: error.message });
   }
 };
 
@@ -130,7 +130,7 @@ export const updateUser = async (req, res) => {
 
     if (profileImg) {
       if (user.profileImg) {
-        await uploadOnCloudinary.destroy(
+        await cloudinary.uploader.destroy(
           user.profileImg.split("/").pop().split(".")[0]
         );
       }
@@ -161,8 +161,8 @@ export const updateUser = async (req, res) => {
     // password should be null in response
     user.password = null;
 
-    res.status(200).json(user);
+    return res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: "Error in updateUser" });
+    res.status(500).json({ message: "Error in updateUser", error: error.message });
   }
 };

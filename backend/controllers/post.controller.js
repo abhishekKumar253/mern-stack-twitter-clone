@@ -47,7 +47,7 @@ export const deletePost = async (req, res) => {
 
     if (post.img) {
       const imgId = post.img.split("/").pop().split(".")[0];
-      await uploadOnCloudinary.destroy(imgId);
+      await cloudinary.uploader.destroy(imgId);
     }
 
     await Post.findByIdAndDelete(req.params.id);
@@ -79,7 +79,7 @@ export const commentPost = async (req, res) => {
     post.comments.push(comment);
     await post.save();
 
-    res.status(201).json({ message: "Comment added successfully" });
+    res.status(201).json(post);
   } catch (error) {
     res.status(500).json({ error: "Error in commentPost controller" });
   }
