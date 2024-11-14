@@ -1,4 +1,4 @@
-import { User } from "../models/user.model.js";
+import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateToken.js";
 import {
@@ -68,7 +68,11 @@ export const signup = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ success: false, error: "Error in signup controller" });
+      .json({
+        success: false,
+        message: "Error in signup controller",
+        error: error.message,
+      });
   }
 };
 
@@ -105,7 +109,11 @@ export const verifyEmail = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ success: false, error: "Error in verifyEmail controller" });
+      .json({
+        success: false,
+        message: "Error in verifyEmail controller",
+        error: error.message,
+      });
   }
 };
 
@@ -138,13 +146,29 @@ export const login = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: "Error in login controller" });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error in login controller",
+        error: error.message,
+      });
   }
 };
 
 export const logout = async (req, res) => {
-  res.clearCookie("token");
-  res.status(200).json({ success: true, message: "Logged out successfully" });
+  try {
+    res.clearCookie("token");
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    res
+      .status(501)
+      .json({
+        success: false,
+        message: "Error in logout controller",
+        error: error.message,
+      });
+  }
 };
 
 export const forgotPassword = async (req, res) => {
@@ -177,7 +201,7 @@ export const forgotPassword = async (req, res) => {
       message: "Password reset link sent to your email",
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error forgot password" });
+    res.status(500).json({ success: false, message: "Error forgot password" , error: error.message});
   }
 };
 
@@ -222,20 +246,12 @@ export const resetPassword = async (req, res) => {
 export const checkAuth = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
-    if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User not found" });
-    }
-
-    res.status(200).json({ success: true, user });
+    res.status(200).json(user);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error in checkAuth controllers",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error in checkAuth controllers",
+      error: error.message,
+    });
   }
 };

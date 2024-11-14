@@ -4,9 +4,17 @@ import Notification from "../models/notification.model.js";
 import { v2 as cloudinary } from "cloudinary";
 
 export const getUserProfile = async (req, res) => {
-  const { username } = req.params;
+  const { username, email } = req.query;
+
+  if (!username && !email) {
+    return res
+      .status(400)
+      .json({ message: "Please provide either username or email" });
+  }
   try {
-    const user = await User.findOne({ username }).select("-password");
+    const user = await User.findOne({ $or: [{ username }, { email }] }).select(
+      "-password"
+    );
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
@@ -14,7 +22,11 @@ export const getUserProfile = async (req, res) => {
 
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: "Error in getUserProfile" });
+    res.status(500).json({
+      success: false,
+      message: "Error in getUserProfile",
+      error: error.message,
+    });
   }
 };
 
@@ -58,7 +70,11 @@ export const followUnfollowUser = async (req, res) => {
       res.status(200).json({ message: "User followed successfullu]y" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Error in followUnfollowUser" });
+    res.status(500).json({
+      success: false,
+      message: "Error in followUnfollowUser",
+      error: error.message,
+    });
   }
 };
 
@@ -87,7 +103,9 @@ export const getSuggestedUsers = async (req, res) => {
 
     res.status(200).json(suggestedUsers);
   } catch (error) {
-    res.status(500).json({ message: "Error in getSuggestedUsers", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error in getSuggestedUsers", error: error.message });
   }
 };
 
@@ -129,23 +147,39 @@ export const updateUser = async (req, res) => {
     }
 
     if (profileImg) {
-      if (user.profileImg) {
-        await cloudinary.uploader.destroy(
-          user.profileImg.split("/").pop().split(".")[0]
-        );
+      try {
+        if (user.profileImg) {
+          await cloudinary.uploader.destroy(
+            user.profileImg.split("/").pop().split(".")[0]
+          );
+        }
+        const uploadedResponse = await cloudinary.uploader.upload(profileImg);
+        profileImg = uploadedResponse.secure_url;
+      } catch (error) {
+        return res.status(501).json({
+          success: false,
+          message: "Image upload failed",
+          error: error.message,
+        });
       }
-      const uploadedResponse = await cloudinary.uploader.upload(profileImg);
-      profileImg = uploadedResponse.secure_url;
     }
 
     if (coverImg) {
-      if (user.coverImg) {
-        await cloudinary.uploader.destroy(
-          user.coverImg.split("/").pop().split(".")[0]
-        );
+      try {
+        if (user.coverImg) {
+          await cloudinary.uploader.destroy(
+            user.coverImg.split("/").pop().split(".")[0]
+          );
+        }
+        const uploadedResponse = await cloudinary.uploader.upload(coverImg);
+        coverImg = uploadedResponse.secure_url;
+      } catch (error) {
+        return res.status(502).json({
+          success: false,
+          message: "Image upload failed",
+          error: error.message,
+        });
       }
-      const uploadedResponse = await cloudinary.uploader.upload(coverImg);
-      coverImg = uploadedResponse.secure_url;
     }
 
     user.fullName = fullName || user.fullName;
@@ -163,6 +197,10 @@ export const updateUser = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: "Error in updateUser", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Error in updateUser",
+      error: error.message,
+    });
   }
 };

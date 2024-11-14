@@ -30,7 +30,9 @@ export const createPost = async (req, res) => {
     await newPost.save();
     res.status(201).json(newPost);
   } catch (error) {
-    res.status(500).json({ error: "Error in createPost controller" });
+    res
+      .status(500)
+      .json({ success: false, error: "Error in createPost controller" });
   }
 };
 
@@ -140,10 +142,6 @@ export const getAllPosts = async (req, res) => {
         path: "comments.user",
         select: "-password",
       });
-
-    if (posts.length === 0) {
-      return res.status(404).json([]);
-    }
 
     res.status(200).json(posts);
   } catch (error) {

@@ -3,10 +3,10 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { config } from "./db/config.js";
 import authRoutes from "./routes/auth.routes.js";
-// import userRoutes from "./routes/user.routes.js";
-// import postRoutes from "./routes/post.routes.js";
-// import notificationRoutes from "./routes/notification.routes.js";
-// import { v2 as cloudinary } from "cloudinary";
+import userRoutes from "./routes/user.routes.js";
+import postRoutes from "./routes/post.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
+import { v2 as cloudinary } from "cloudinary";
 
 const app = express();
 
@@ -17,11 +17,11 @@ app.use(
   })
 );
 
-// cloudinary.config({
-//   cloud_name: config.cloudName,
-//   api_key: config.apiKey,
-//   api_secret: config.apiSecret,
-// });
+cloudinary.config({
+  cloud_name: config.cloudName,
+  api_key: config.apiKey,
+  api_secret: config.apiSecret,
+});
 
 
 
@@ -30,9 +30,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/v1/auth", authRoutes);
-// app.use("/api/users", userRoutes);
-// app.use("/api/posts", postRoutes);
-// app.use("/api/notifications", notificationRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/posts", postRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
 
 export { app };
