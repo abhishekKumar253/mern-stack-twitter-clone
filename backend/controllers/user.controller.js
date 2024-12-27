@@ -4,29 +4,16 @@ import Notification from "../models/notification.model.js";
 import { v2 as cloudinary } from "cloudinary";
 
 export const getUserProfile = async (req, res) => {
-  const { username, email } = req.query;
-
-  if (!username && !email) {
-    return res
-      .status(400)
-      .json({ message: "Please provide either username or email" });
-  }
+  const { username } = req.params;
+  
   try {
-    const user = await User.findOne({ $or: [{ username }, { email }] }).select(
-      "-password"
-    );
-
-    if (!user) {
-      return res.status(401).json({ message: "User not found" });
-    }
+    const user = await User.findOne({ username }).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error in getUserProfile",
-      error: error.message,
-    });
+    console.log("Error in getUserProfile: ", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -70,11 +57,8 @@ export const followUnfollowUser = async (req, res) => {
       res.status(200).json({ message: "User followed successfullu]y" });
     }
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error in followUnfollowUser",
-      error: error.message,
-    });
+    console.log("Error in followUnfollowUser: ", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -103,9 +87,8 @@ export const getSuggestedUsers = async (req, res) => {
 
     res.status(200).json(suggestedUsers);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error in getSuggestedUsers", error: error.message });
+    console.log("Error in getSuggestedUsers: ", error.message);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -197,10 +180,7 @@ export const updateUser = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error in updateUser",
-      error: error.message,
-    });
+    console.log("Error in updateUser: ", error.message);
+    res.status(500).json({ error: error.message });
   }
 };

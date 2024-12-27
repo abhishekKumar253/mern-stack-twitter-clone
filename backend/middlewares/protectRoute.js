@@ -1,3 +1,4 @@
+import { config } from "../db/config.js";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
@@ -8,7 +9,7 @@ export const protectRoute = async (req, res, next) => {
       return res.status(401).json({ error: "Unauthorized: No Token Provided" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, config.jwtSecret);
 
     if (!decoded) {
       return res.status(401).json({ error: "Unauthorized: Invalid Token" });
