@@ -10,12 +10,14 @@ import { v2 as cloudinary } from "cloudinary";
 
 const app = express();
 
+
 app.use(
   cors({
-    origin: config.cors,
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
   })
 );
+
 
 cloudinary.config({
   cloud_name: config.cloudName,

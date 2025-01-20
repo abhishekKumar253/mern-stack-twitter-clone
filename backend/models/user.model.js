@@ -4,21 +4,21 @@ const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: [true, "Username is required"],
+      required: true,
       unique: true,
     },
     fullName: {
       type: String,
-      required: [true, "Full name is required"],
+      required: true,
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
-      minlength: 6,
+      required: true,
+      minLength: 6,
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: true,
       unique: true,
     },
     followers: [
@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+
     link: {
       type: String,
       default: "",

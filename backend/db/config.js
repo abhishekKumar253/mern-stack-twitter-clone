@@ -4,7 +4,6 @@ conf();
 const _config = {
   port: process.env.PORT,
   databaseUrl: process.env.MONGODB_URI,
-  cors: process.env.CORS_ORIGIN,
   cloudName: process.env.CLOUDINARY_CLOUD_NAME,
   apiKey: process.env.CLOUDINARY_API_KEY,
   apiSecret: process.env.CLOUDINARY_API_SECRET,
